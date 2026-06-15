@@ -1,0 +1,20 @@
+{
+  "name": "达人分销管理小程序",
+  "short_name": "达人分销",
+  "description": "中葡双语达人分销管理工作台，支持达人 CRM、样品、内容、销售、ROI 和团队日报。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#246bfe",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
