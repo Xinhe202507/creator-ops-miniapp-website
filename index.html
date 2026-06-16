@@ -223,6 +223,41 @@
     </form>
   </div>
 
+  <div id="sampleModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-sample-modal></div>
+    <form id="sampleForm" class="modal-card" autocomplete="off">
+      <div class="modal-head">
+        <div>
+          <h2 id="sampleModalTitle">新增样品单</h2>
+          <p id="sampleModalSubtitle" class="muted">录入达人、SKU、样品费用、物流和发布截止日。</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-sample-modal aria-label="关闭">×</button>
+      </div>
+
+      <div class="form-section">
+        <h3 data-i18n="sampleInfo">样品信息</h3>
+        <div class="form-grid">
+          <label><span data-i18n="creator">达人</span><input name="creator" required placeholder="@creator"></label>
+          <label><span data-i18n="sku">SKU</span><input name="sku" list="skuOptions" required placeholder="电动清洁刷"></label>
+          <label><span data-i18n="samplePrice">样品单价</span><input name="price" type="number" min="0" step="0.01" value="0"></label>
+          <label><span data-i18n="sampleQuantity">样品数量</span><input name="quantity" type="number" min="0" value="1"></label>
+          <label><span data-i18n="sampleCost">样品总成本</span><input name="cost" type="number" min="0" step="0.01" list="sampleCostOptions" value="0"></label>
+          <label><span data-i18n="shippingFee">运费</span><input name="shipping" type="number" min="0" step="0.01" value="0"></label>
+          <label><span data-i18n="status">状态</span><select name="status"><option value="待发货">待发货</option><option value="已发货">已发货</option><option value="运输中">运输中</option><option value="已签收">已签收</option><option value="样品签收">样品签收</option></select></label>
+          <label><span data-i18n="shippedDate">发货时间</span><input name="shippingDate" type="date"></label>
+          <label><span data-i18n="receivedDate">收到货时间</span><input name="receivedDate" type="date"></label>
+          <label><span data-i18n="publishDeadline">发布截止</span><input name="deadline" type="date"></label>
+          <label><span data-i18n="owner">负责人</span><input name="owner" list="ownerOptions" placeholder="Ana"></label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="ghost" type="button" data-close-sample-modal>取消</button>
+        <button type="submit" id="saveSampleBtn">保存样品单</button>
+      </div>
+    </form>
+  </div>
+
   <datalist id="ownerOptions"></datalist>
   <datalist id="skuOptions"></datalist>
   <datalist id="sampleCostOptions"></datalist>

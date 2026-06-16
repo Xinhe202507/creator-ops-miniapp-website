@@ -106,6 +106,8 @@ const I18N = {
     editCreator: "修改达人",
     confirmDelete: "确认删除这个达人？",
     confirmDeleteVideo: "确认删除这条视频？",
+    confirmDeleteSku: "确认删除这个 SKU？",
+    confirmDeleteSample: "确认删除这条样品单？",
     reportDone: "日报已生成：包含 GMV、ROI、异常和明日动作",
     reserved: "原型中已预留入口",
     overdueSamples: "个样品签收超期未发视频",
@@ -130,6 +132,12 @@ const I18N = {
     addSample: "新增样品单",
     addSampleHint: "录入 SKU、达人、样品成本、物流和发布截止日",
     sampleBoardTitle: "样品操作",
+    sampleInfo: "样品信息",
+    editSample: "修改样品单",
+    saveSample: "保存样品单",
+    sampleSaved: "样品单已保存",
+    shippingFee: "运费",
+    publishDeadline: "发布截止",
     sendBrief: "下发 Brief",
     addSku: "新增 SKU",
     skuInfo: "SKU 信息",
@@ -250,6 +258,8 @@ const I18N = {
     editCreator: "Editar criador",
     confirmDelete: "Confirmar exclusão deste criador?",
     confirmDeleteVideo: "Confirmar exclusão deste vídeo?",
+    confirmDeleteSku: "Confirmar exclusão deste SKU?",
+    confirmDeleteSample: "Confirmar exclusão desta amostra?",
     reportDone: "Relatório gerado com GMV, ROI, alertas e ações",
     reserved: "Entrada reservada no protótipo",
     overdueSamples: "amostras recebidas sem vídeo no prazo",
@@ -274,6 +284,12 @@ const I18N = {
     addSample: "Nova amostra",
     addSampleHint: "Registrar SKU, criador, custo, logística e prazo de postagem",
     sampleBoardTitle: "Ações de amostras",
+    sampleInfo: "Informações da amostra",
+    editSample: "Editar amostra",
+    saveSample: "Salvar amostra",
+    sampleSaved: "Amostra salva",
+    shippingFee: "Frete",
+    publishDeadline: "Prazo de postagem",
     sendBrief: "Enviar briefing",
     addSku: "Adicionar SKU",
     skuInfo: "Informações do SKU",
@@ -378,6 +394,7 @@ const state = {
   lang: localStorage.getItem("creatorOpsLang") || "zh",
   editingCreatorId: "",
   editingSkuName: "",
+  editingSampleId: "",
   activeVideoCreatorId: "",
   editingVideoId: "",
   roiMode: "creator",
@@ -394,6 +411,8 @@ const modal = document.querySelector("#creatorModal");
 const form = document.querySelector("#creatorForm");
 const skuModal = document.querySelector("#skuModal");
 const skuForm = document.querySelector("#skuForm");
+const sampleModal = document.querySelector("#sampleModal");
+const sampleForm = document.querySelector("#sampleForm");
 const videoModal = document.querySelector("#videoModal");
 const videoForm = document.querySelector("#videoForm");
 const videoList = document.querySelector("#videoList");
@@ -521,9 +540,10 @@ function renderMemoryOptions() {
 function loadSkus() {
   try {
     const saved = JSON.parse(localStorage.getItem("creatorOpsSkus") || "[]");
+    const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedSkus") || "[]");
     const bySku = new Map(baseSkus.map((item) => [item.sku, item]));
     saved.forEach((item) => bySku.set(item.sku, { ...bySku.get(item.sku), ...item }));
-    return Array.from(bySku.values());
+    return Array.from(bySku.values()).filter((item) => !deleted.includes(item.sku));
   } catch {
     return [...baseSkus];
   }
@@ -532,7 +552,10 @@ function loadSkus() {
 function loadSamples() {
   try {
     const saved = JSON.parse(localStorage.getItem("creatorOpsSamples") || "[]");
-    return [...baseSamples, ...saved];
+    const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedSamples") || "[]");
+    const byId = new Map(baseSamples.map((item) => [item.id, item]));
+    saved.forEach((item) => byId.set(item.id, { ...byId.get(item.id), ...item }));
+    return Array.from(byId.values()).filter((item) => !deleted.includes(item.id));
   } catch {
     return [...baseSamples];
   }
@@ -645,6 +668,7 @@ function upsertSkuRecord(creator) {
 
 function saveSkuRecord(record, originalSku = "") {
   const saved = JSON.parse(localStorage.getItem("creatorOpsSkus") || "[]");
+  const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedSkus") || "[]").filter((sku) => sku !== record.sku.trim() && sku !== originalSku);
   const normalized = {
     sku: record.sku.trim(),
     price: Number(record.price) || 0,
@@ -659,8 +683,64 @@ function saveSkuRecord(record, originalSku = "") {
   if (existingIndex >= 0) saved[existingIndex] = normalized;
   else saved.push(normalized);
   localStorage.setItem("creatorOpsSkus", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedSkus", JSON.stringify(deleted));
   rememberValue("creatorOpsMemorySkus", normalized.sku);
   skus = loadSkus();
+}
+
+function deleteSkuRecord(skuName) {
+  const saved = JSON.parse(localStorage.getItem("creatorOpsSkus") || "[]").filter((item) => item.sku !== skuName);
+  const deleted = new Set(JSON.parse(localStorage.getItem("creatorOpsDeletedSkus") || "[]"));
+  deleted.add(skuName);
+  localStorage.setItem("creatorOpsSkus", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedSkus", JSON.stringify([...deleted]));
+  skus = loadSkus();
+}
+
+function createSampleId() {
+  return `sample:custom:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function saveSampleRecord(record, originalId = "") {
+  const saved = JSON.parse(localStorage.getItem("creatorOpsSamples") || "[]");
+  const price = Number(record.price || 0);
+  const quantity = Number(record.quantity || 0);
+  const cost = Number(record.cost || 0) || price * quantity;
+  const sample = {
+    id: originalId || record.id || createSampleId(),
+    creatorId: record.creatorId || "",
+    creator: String(record.creator || "").trim(),
+    sku: String(record.sku || "").trim(),
+    price,
+    quantity,
+    cost,
+    shipping: Number(record.shipping || 0),
+    status: record.status || "待发货",
+    shippingDate: record.shippingDate || "-",
+    receivedDate: record.receivedDate || "-",
+    signed: record.receivedDate || (record.status === "已签收" || record.status === "样品签收" ? state.date : "-"),
+    deadline: record.deadline || state.date,
+    owner: String(record.owner || "").trim()
+  };
+  const existingIndex = saved.findIndex((item) => item.id === sample.id);
+  if (existingIndex >= 0) saved[existingIndex] = sample;
+  else saved.push(sample);
+  const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedSamples") || "[]").filter((id) => id !== sample.id);
+  localStorage.setItem("creatorOpsSamples", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedSamples", JSON.stringify(deleted));
+  rememberValue("creatorOpsMemorySkus", sample.sku);
+  rememberValue("creatorOpsMemoryOwners", sample.owner);
+  rememberValue("creatorOpsMemorySampleCosts", sample.cost);
+  samples = loadSamples();
+}
+
+function deleteSampleRecord(sampleId) {
+  const saved = JSON.parse(localStorage.getItem("creatorOpsSamples") || "[]").filter((item) => item.id !== sampleId);
+  const deleted = new Set(JSON.parse(localStorage.getItem("creatorOpsDeletedSamples") || "[]"));
+  deleted.add(sampleId);
+  localStorage.setItem("creatorOpsSamples", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedSamples", JSON.stringify([...deleted]));
+  samples = loadSamples();
 }
 
 function upsertSampleRecord(creator) {
@@ -689,7 +769,9 @@ function upsertSampleRecord(creator) {
   };
   if (existingIndex >= 0) saved[existingIndex] = record;
   else saved.push(record);
+  const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedSamples") || "[]").filter((id) => id !== record.id);
   localStorage.setItem("creatorOpsSamples", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedSamples", JSON.stringify(deleted));
   samples = loadSamples();
 }
 
@@ -1052,7 +1134,7 @@ function renderSamples() {
     <section class="card panel">
       <div class="panel-head"><h2>${t("samples")}</h2><span class="muted">${t("sampleBoardTitle")}</span></div>
       <div class="sample-action-grid">
-        <div class="card sample-action-card" role="button" tabindex="0" data-action="${t("addSample")}">
+        <div class="card sample-action-card" role="button" tabindex="0" data-open-sample>
           <span class="sample-action-icon">+</span>
           <div>
             <strong>${t("addSample")}</strong>
@@ -1060,10 +1142,10 @@ function renderSamples() {
           </div>
         </div>
       </div>
-      ${table([t("creator"), t("sku"), t("samplePrice"), t("sampleQuantity"), t("sampleCost"), state.lang === "pt" ? "Frete" : "运费", t("shippedDate"), t("receivedDate"), t("status"), state.lang === "pt" ? "Prazo" : "发布截止", t("owner"), state.lang === "pt" ? "Risco" : "风险"], samples.map((s) => {
-        const overdue = s.status === "已签收" && s.deadline < "2026-06-15";
+      ${table([t("creator"), t("sku"), t("samplePrice"), t("sampleQuantity"), t("sampleCost"), state.lang === "pt" ? "Frete" : "运费", t("shippedDate"), t("receivedDate"), t("status"), state.lang === "pt" ? "Prazo" : "发布截止", t("owner"), state.lang === "pt" ? "Risco" : "风险", t("actions")], samples.map((s) => {
+        const overdue = s.status === "已签收" && s.deadline < state.date;
         const videoOverdue = receivedOverdueVideoSamples().some((item) => item.id === s.id);
-        return `<tr><td>${s.creator}</td><td>${s.sku}</td><td>${brl(s.price || s.cost)}</td><td>${s.quantity || 1}</td><td>${brl(s.cost)}</td><td>${brl(s.shipping)}</td><td>${s.shippingDate || "-"}</td><td>${s.receivedDate || s.signed || "-"}</td><td>${statusText(s.status)}</td><td>${s.deadline}</td><td>${s.owner}</td><td><span class="pill ${videoOverdue || overdue ? "bad" : "ok"}">${videoOverdue ? t("noVideoAfterReceived") : overdue ? (state.lang === "pt" ? "Atrasado" : "逾期") : (state.lang === "pt" ? "Normal" : "正常")}</span></td></tr>`;
+        return `<tr><td>${s.creator}</td><td>${s.sku}</td><td>${brl(s.price || s.cost)}</td><td>${s.quantity || 1}</td><td>${brl(s.cost)}</td><td>${brl(s.shipping)}</td><td>${s.shippingDate || "-"}</td><td>${s.receivedDate || s.signed || "-"}</td><td>${statusText(s.status)}</td><td>${s.deadline}</td><td>${s.owner}</td><td><span class="pill ${videoOverdue || overdue ? "bad" : "ok"}">${videoOverdue ? t("noVideoAfterReceived") : overdue ? (state.lang === "pt" ? "Atrasado" : "逾期") : (state.lang === "pt" ? "Normal" : "正常")}</span></td><td><span class="table-actions"><button type="button" class="ghost" data-edit-sample="${s.id}">${t("edit")}</button><button type="button" class="danger" data-delete-sample="${s.id}">${t("delete")}</button></span></td></tr>`;
       }).join(""))}
     </section>
   `;
@@ -1139,7 +1221,7 @@ function renderSku() {
   return `
     <section class="card panel">
       <div class="panel-head"><h2>${t("sku")}</h2><button type="button" data-open-sku>${t("addSku")}</button></div>
-      ${table([t("sku"), t("sellingPrice"), t("cost"), t("commission"), t("stock"), t("sampleStock"), t("potential"), t("creatorFit"), t("actions")], skus.map((s) => `<tr><td>${s.sku}</td><td>${brl(s.price)}</td><td>${brl(s.cost)}</td><td>${s.commission}</td><td>${s.stock}</td><td>${s.samples}</td><td><div class="progress"><span style="width:${s.score}%"></span></div></td><td>${s.fit}</td><td><span class="table-actions"><button type="button" class="ghost" data-edit-sku="${s.sku}">${t("edit")}</button></span></td></tr>`).join(""))}
+      ${table([t("sku"), t("sellingPrice"), t("cost"), t("commission"), t("stock"), t("sampleStock"), t("potential"), t("creatorFit"), t("actions")], skus.map((s) => `<tr><td>${s.sku}</td><td>${brl(s.price)}</td><td>${brl(s.cost)}</td><td>${s.commission}</td><td>${s.stock}</td><td>${s.samples}</td><td><div class="progress"><span style="width:${s.score}%"></span></div></td><td>${s.fit}</td><td><span class="table-actions"><button type="button" class="ghost" data-edit-sku="${s.sku}">${t("edit")}</button><button type="button" class="danger" data-delete-sku="${s.sku}">${t("delete")}</button></span></td></tr>`).join(""))}
     </section>
   `;
 }
@@ -1199,6 +1281,9 @@ function renderStaticTexts() {
   document.querySelector("#videoModalTitle").textContent = t("videoRecords");
   document.querySelector("#videoModalSubtitle").textContent = state.lang === "pt" ? "Um criador pode ter vários vídeos." : "一个达人可以添加多条视频。";
   document.querySelector("#saveVideoBtn").textContent = t("saveVideo");
+  document.querySelector("#sampleModalTitle").textContent = state.editingSampleId ? t("editSample") : t("addSample");
+  document.querySelector("#sampleModalSubtitle").textContent = t("addSampleHint");
+  document.querySelector("#saveSampleBtn").textContent = t("saveSample");
   document.querySelectorAll("[data-close-modal]").forEach((node) => {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
@@ -1206,6 +1291,9 @@ function renderStaticTexts() {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
   document.querySelectorAll("[data-close-video-modal]").forEach((node) => {
+    if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
+  });
+  document.querySelectorAll("[data-close-sample-modal]").forEach((node) => {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
   document.querySelectorAll("[data-lang]").forEach((node) => node.classList.toggle("active", node.dataset.lang === state.lang));
@@ -1303,6 +1391,45 @@ function openEditSkuModal(skuName) {
 function closeSkuModal() {
   skuModal.classList.remove("open");
   skuModal.setAttribute("aria-hidden", "true");
+}
+
+function openSampleModal() {
+  state.editingSampleId = "";
+  sampleForm.reset();
+  sampleForm.elements.quantity.value = 1;
+  sampleForm.elements.deadline.value = state.date;
+  sampleModal.classList.add("open");
+  sampleModal.setAttribute("aria-hidden", "false");
+  renderStaticTexts();
+  sampleForm.elements.creator.focus();
+}
+
+function openEditSampleModal(sampleId) {
+  const sample = samples.find((item) => item.id === sampleId);
+  if (!sample) return;
+  state.editingSampleId = sampleId;
+  sampleForm.reset();
+  sampleForm.elements.creator.value = sample.creator || "";
+  sampleForm.elements.sku.value = sample.sku || "";
+  sampleForm.elements.price.value = sample.price || 0;
+  sampleForm.elements.quantity.value = sample.quantity || 1;
+  sampleForm.elements.cost.value = sample.cost || 0;
+  sampleForm.elements.shipping.value = sample.shipping || 0;
+  sampleForm.elements.status.value = sample.status || "待发货";
+  sampleForm.elements.shippingDate.value = sample.shippingDate === "-" ? "" : sample.shippingDate || "";
+  sampleForm.elements.receivedDate.value = sample.receivedDate === "-" ? "" : sample.receivedDate || sample.signed || "";
+  sampleForm.elements.deadline.value = sample.deadline || state.date;
+  sampleForm.elements.owner.value = sample.owner || "";
+  sampleModal.classList.add("open");
+  sampleModal.setAttribute("aria-hidden", "false");
+  renderStaticTexts();
+  sampleForm.elements.creator.focus();
+}
+
+function closeSampleModal() {
+  state.editingSampleId = "";
+  sampleModal.classList.remove("open");
+  sampleModal.setAttribute("aria-hidden", "true");
 }
 
 function renderVideoRows(list) {
@@ -1481,6 +1608,9 @@ document.body.addEventListener("click", (event) => {
   const closeVideoTarget = event.target.closest("[data-close-video-modal]");
   if (closeVideoTarget) closeVideoModal();
 
+  const closeSampleTarget = event.target.closest("[data-close-sample-modal]");
+  if (closeSampleTarget) closeSampleModal();
+
   const moduleTarget = event.target.closest("[data-module]");
   if (moduleTarget) {
     state.module = moduleTarget.dataset.module;
@@ -1500,9 +1630,41 @@ document.body.addEventListener("click", (event) => {
     return;
   }
 
+  const openSampleTarget = event.target.closest("[data-open-sample]");
+  if (openSampleTarget) {
+    openSampleModal();
+    return;
+  }
+
   const editSkuTarget = event.target.closest("[data-edit-sku]");
   if (editSkuTarget) {
     openEditSkuModal(editSkuTarget.dataset.editSku);
+    return;
+  }
+
+  const deleteSkuTarget = event.target.closest("[data-delete-sku]");
+  if (deleteSkuTarget) {
+    if (window.confirm(t("confirmDeleteSku"))) {
+      deleteSkuRecord(deleteSkuTarget.dataset.deleteSku);
+      render();
+      showToast(t("deleted"));
+    }
+    return;
+  }
+
+  const editSampleTarget = event.target.closest("[data-edit-sample]");
+  if (editSampleTarget) {
+    openEditSampleModal(editSampleTarget.dataset.editSample);
+    return;
+  }
+
+  const deleteSampleTarget = event.target.closest("[data-delete-sample]");
+  if (deleteSampleTarget) {
+    if (window.confirm(t("confirmDeleteSample"))) {
+      deleteSampleRecord(deleteSampleTarget.dataset.deleteSample);
+      render();
+      showToast(t("deleted"));
+    }
     return;
   }
 
@@ -1565,6 +1727,12 @@ document.body.addEventListener("click", (event) => {
 
 document.body.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" && event.key !== " ") return;
+  const openSampleTarget = event.target.closest("[data-open-sample]");
+  if (openSampleTarget) {
+    event.preventDefault();
+    openSampleModal();
+    return;
+  }
   const actionTarget = event.target.closest("[data-action]");
   if (!actionTarget) return;
   event.preventDefault();
@@ -1624,6 +1792,30 @@ skuForm.addEventListener("submit", (event) => {
   state.module = "sku";
   render();
   showToast(t("skuSaved"));
+});
+
+sampleForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const formData = new FormData(sampleForm);
+  saveSampleRecord({
+    creator: formData.get("creator"),
+    sku: formData.get("sku"),
+    price: formData.get("price"),
+    quantity: formData.get("quantity"),
+    cost: formData.get("cost"),
+    shipping: formData.get("shipping"),
+    status: formData.get("status"),
+    shippingDate: formData.get("shippingDate"),
+    receivedDate: formData.get("receivedDate"),
+    deadline: formData.get("deadline"),
+    owner: formData.get("owner")
+  }, state.editingSampleId);
+  state.editingSampleId = "";
+  sampleForm.reset();
+  closeSampleModal();
+  state.module = "samples";
+  render();
+  showToast(t("sampleSaved"));
 });
 
 videoForm.addEventListener("submit", (event) => {
