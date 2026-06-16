@@ -455,6 +455,69 @@ function storedCreators() {
   }
 }
 
+function memoryValues(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "[]").filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function uniqueValues(values) {
+  return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)));
+}
+
+function rememberValue(key, value) {
+  const normalized = String(value || "").trim();
+  if (!normalized || normalized === "0") return;
+  const values = uniqueValues([normalized, ...memoryValues(key)]).slice(0, 80);
+  localStorage.setItem(key, JSON.stringify(values));
+}
+
+function rememberCreatorFormOptions(creator) {
+  rememberValue("creatorOpsMemoryOwners", creator.owner);
+  rememberValue("creatorOpsMemorySkus", creator.sku);
+  rememberValue("creatorOpsMemorySampleCosts", creator.sampleCost);
+}
+
+function escapeOption(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function renderOptions(nodeId, values) {
+  const node = document.querySelector(`#${nodeId}`);
+  if (!node) return;
+  node.innerHTML = uniqueValues(values).map((value) => `<option value="${escapeOption(value)}"></option>`).join("");
+}
+
+function renderMemoryOptions() {
+  renderOptions("ownerOptions", [
+    ...memoryValues("creatorOpsMemoryOwners"),
+    ...baseCreators.map((creator) => creator.owner),
+    ...creators.map((creator) => creator.owner),
+    ...samples.map((sample) => sample.owner)
+  ]);
+  renderOptions("skuOptions", [
+    ...memoryValues("creatorOpsMemorySkus"),
+    ...baseSkus.map((item) => item.sku),
+    ...skus.map((item) => item.sku),
+    ...creators.map((creator) => creator.sku),
+    ...samples.map((sample) => sample.sku),
+    ...videos.map((video) => video.sku)
+  ]);
+  renderOptions("sampleCostOptions", [
+    ...memoryValues("creatorOpsMemorySampleCosts"),
+    ...creators.map((creator) => creator.sampleCost),
+    ...samples.map((sample) => sample.cost)
+  ]);
+}
+
 function loadSkus() {
   try {
     const saved = JSON.parse(localStorage.getItem("creatorOpsSkus") || "[]");
@@ -502,6 +565,7 @@ function saveVideoRecord(record) {
   const saved = JSON.parse(localStorage.getItem("creatorOpsVideos") || "[]");
   const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedVideos") || "[]").filter((id) => id !== record.id);
   const financials = videoFinancials(record);
+  rememberValue("creatorOpsMemorySkus", record.sku);
   const video = {
     id: record.id || createVideoId(),
     creatorId: record.creatorId,
@@ -575,6 +639,7 @@ function upsertSkuRecord(creator) {
   else if (!baseSkus.some((item) => item.sku === creator.sku)) saved.push(record);
   else saved.push(record);
   localStorage.setItem("creatorOpsSkus", JSON.stringify(saved));
+  rememberValue("creatorOpsMemorySkus", creator.sku);
   skus = loadSkus();
 }
 
@@ -594,6 +659,7 @@ function saveSkuRecord(record, originalSku = "") {
   if (existingIndex >= 0) saved[existingIndex] = normalized;
   else saved.push(normalized);
   localStorage.setItem("creatorOpsSkus", JSON.stringify(saved));
+  rememberValue("creatorOpsMemorySkus", normalized.sku);
   skus = loadSkus();
 }
 
@@ -804,6 +870,7 @@ function creatorFromImportRow(row) {
 function importCreatorsFromRows(rows) {
   const imported = rows.map(creatorFromImportRow).filter(Boolean);
   imported.forEach((creator) => {
+    rememberCreatorFormOptions(creator);
     saveCustomCreator(creator);
     upsertSkuRecord(creator);
     upsertSampleRecord(creator);
@@ -1142,6 +1209,7 @@ function renderStaticTexts() {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
   document.querySelectorAll("[data-lang]").forEach((node) => node.classList.toggle("active", node.dataset.lang === state.lang));
+  renderMemoryOptions();
 }
 
 function render() {
@@ -1362,6 +1430,7 @@ function addCreatorFromForm(formData) {
   } else {
     saveCustomCreator(creator);
   }
+  rememberCreatorFormOptions(creator);
   upsertSkuRecord(creator);
   upsertSampleRecord(creator);
   if (formData.get("videoLink") || views > 0) {

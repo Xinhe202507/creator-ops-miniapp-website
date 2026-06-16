@@ -112,7 +112,7 @@
           <label>WhatsApp<input name="whatsapp" placeholder="+55"></label>
           <label>Email<input name="email" type="email" placeholder="creator@email.com"></label>
           <label><span data-i18n="dmStatus">站内私信状态</span><select name="dmStatus"><option value="未联系">未联系</option><option value="已联系">已联系</option><option value="已回复">已回复</option></select></label>
-          <label><span data-i18n="owner">负责人</span><select name="owner"><option>Ana</option><option>Bruno</option><option>Carla</option><option>Diego</option></select></label>
+          <label><span data-i18n="owner">负责人</span><input name="owner" list="ownerOptions" placeholder="Ana"></label>
         </div>
       </div>
 
@@ -120,13 +120,13 @@
         <h3 data-i18n="coopInfo">合作信息</h3>
         <div class="form-grid">
           <label><span data-i18n="status">当前状态</span><select name="status"><option value="未联系">未联系</option><option value="已联系">已联系</option><option value="已回复">已回复</option><option value="谈判中">谈判中</option><option value="已寄样">已寄样</option><option value="样品签收">样品签收</option><option value="Brief 已发">Brief 已发</option><option value="已发布">已发布</option><option value="复投">复投</option><option value="暂停">暂停</option></select></label>
-          <label><span data-i18n="sku">合作 SKU</span><input name="sku" required placeholder="电动清洁刷"></label>
+          <label><span data-i18n="sku">合作 SKU</span><input name="sku" list="skuOptions" required placeholder="电动清洁刷"></label>
           <label><span data-i18n="commission">佣金比例</span><input name="commission" placeholder="18%"></label>
           <label><span data-i18n="fixedFee">报价 / 固定费用</span><input name="fixedFee" type="number" min="0" step="0.01" value="0"></label>
           <label><span data-i18n="needSample">是否需要样品</span><select name="needSample"><option value="是">是</option><option value="否">否</option></select></label>
           <label><span data-i18n="samplePrice">样品单价</span><input name="samplePrice" type="number" min="0" step="0.01" value="0"></label>
           <label><span data-i18n="sampleQuantity">样品数量</span><input name="sampleQuantity" type="number" min="0" value="1"></label>
-          <label><span data-i18n="sampleCost">样品总成本</span><input name="sampleCost" type="number" min="0" step="0.01" value="0"></label>
+          <label><span data-i18n="sampleCost">样品总成本</span><input name="sampleCost" type="number" min="0" step="0.01" list="sampleCostOptions" value="0"></label>
           <label><span data-i18n="shippedDate">发货时间</span><input name="shippedDate" type="date"></label>
           <label><span data-i18n="receivedDate">收到货时间</span><input name="receivedDate" type="date"></label>
         </div>
@@ -166,7 +166,7 @@
       <div class="form-section">
         <h3 data-i18n="skuInfo">SKU 信息</h3>
         <div class="form-grid">
-          <label><span data-i18n="sku">SKU</span><input name="sku" required placeholder="电动清洁刷"></label>
+          <label><span data-i18n="sku">SKU</span><input name="sku" list="skuOptions" required placeholder="电动清洁刷"></label>
           <label><span data-i18n="sellingPrice">售价</span><input name="price" type="number" min="0" step="0.01" value="0"></label>
           <label><span data-i18n="cost">成本</span><input name="cost" type="number" min="0" step="0.01" value="0"></label>
           <label><span data-i18n="commission">佣金比例</span><input name="commission" placeholder="18%"></label>
@@ -202,7 +202,7 @@
         <div class="form-grid">
           <label><span data-i18n="videoLink">视频链接</span><input name="link" placeholder="https://"></label>
           <label><span data-i18n="publishDate">发布时间</span><input name="date" type="date"></label>
-          <label><span data-i18n="sku">SKU</span><input name="sku" placeholder="电动清洁刷"></label>
+          <label><span data-i18n="sku">SKU</span><input name="sku" list="skuOptions" placeholder="电动清洁刷"></label>
           <label><span data-i18n="contentType">内容类型</span><select name="type"><option value="开箱">开箱</option><option value="测评">测评</option><option value="剧情">剧情</option><option value="直播切片">直播切片</option><option value="种草">种草</option></select></label>
           <label><span data-i18n="views">播放量</span><input name="views" type="number" min="0" value="0"></label>
           <label><span data-i18n="likes">点赞</span><input name="likes" type="number" min="0" value="0"></label>
@@ -222,6 +222,10 @@
       </div>
     </form>
   </div>
+
+  <datalist id="ownerOptions"></datalist>
+  <datalist id="skuOptions"></datalist>
+  <datalist id="sampleCostOptions"></datalist>
 
   <script src="progress-utils.js"></script>
   <script src="app.js"></script>
