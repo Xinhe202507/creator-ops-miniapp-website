@@ -258,6 +258,51 @@
     </form>
   </div>
 
+  <div id="liveModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-live-modal></div>
+    <form id="liveForm" class="modal-card" autocomplete="off">
+      <div class="modal-head">
+        <div>
+          <h2 id="liveModalTitle">直播合作记录</h2>
+          <p id="liveModalSubtitle" class="muted">一个达人可以添加多场直播，数据会进入内容管理和 ROI 分析。</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-live-modal aria-label="关闭">×</button>
+      </div>
+
+      <div id="liveList" class="form-section"></div>
+
+      <div class="form-section">
+        <h3 data-i18n="addLive">新增直播</h3>
+        <div class="form-grid">
+          <label><span data-i18n="livePlatform">直播平台</span><select name="livePlatform"><option>TikTok</option><option>Kwai</option><option>Shopee</option><option>Mercado Livre</option></select></label>
+          <label><span data-i18n="liveDate">直播日期</span><input name="liveDate" type="date"></label>
+          <label><span data-i18n="startTime">开始时间</span><input name="startTime" type="time"></label>
+          <label><span data-i18n="endTime">结束时间</span><input name="endTime" type="time"></label>
+          <label><span data-i18n="duration">直播时长</span><input name="duration" placeholder="2h"></label>
+          <label><span data-i18n="liveLink">直播间链接</span><input name="liveLink" placeholder="https://"></label>
+          <label><span data-i18n="sku">合作 SKU</span><input name="sku" list="skuOptions" placeholder="电动清洁刷"></label>
+          <label><span data-i18n="sampleCost">样品成本</span><input name="sampleCost" type="number" min="0" step="0.01" list="sampleCostOptions" value="0"></label>
+          <label><span data-i18n="slotFee">坑位费 / 固定费用</span><input name="slotFee" type="number" min="0" step="0.01" value="0"></label>
+          <label><span data-i18n="commission">佣金比例</span><input name="commission" placeholder="18%"></label>
+          <label><span data-i18n="liveViews">直播观看人数</span><input name="views" type="number" min="0" value="0"></label>
+          <label><span data-i18n="peakOnline">峰值在线人数</span><input name="peakOnline" type="number" min="0" value="0"></label>
+          <label><span data-i18n="clicks">点击数</span><input name="clicks" type="number" min="0" value="0"></label>
+          <label><span data-i18n="orders">订单数</span><input name="orders" type="number" min="0" value="0"></label>
+          <label>GMV<input name="gmv" type="number" min="0" step="0.01" value="0"></label>
+          <label><span data-i18n="refunds">退款数</span><input name="refunds" type="number" min="0" value="0"></label>
+          <label><span data-i18n="liveStatus">直播状态</span><select name="status"><option value="待排期">待排期</option><option value="已确认">已确认</option><option value="直播中">直播中</option><option value="已结束">已结束</option><option value="复盘完成">复盘完成</option><option value="暂停">暂停</option></select></label>
+          <label><span data-i18n="owner">负责人</span><input name="owner" list="ownerOptions" placeholder="Ana"></label>
+        </div>
+        <label class="wide"><span data-i18n="notes">备注</span><textarea name="notes" rows="3" placeholder="直播复盘、达人反馈、下一步动作"></textarea></label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="ghost" type="button" data-close-live-modal>取消</button>
+        <button type="submit" id="saveLiveBtn">保存直播</button>
+      </div>
+    </form>
+  </div>
+
   <datalist id="ownerOptions"></datalist>
   <datalist id="skuOptions"></datalist>
   <datalist id="sampleCostOptions"></datalist>

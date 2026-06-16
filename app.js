@@ -89,23 +89,43 @@ const I18N = {
     delete: "删除",
     actions: "操作",
     viewVideos: "查看视频",
+    viewLives: "查看直播",
     videoRecords: "视频内容记录",
+    liveRecords: "直播合作记录",
     addVideo: "新增视频",
+    addLive: "新增直播",
     saveVideo: "保存视频",
+    saveLive: "保存直播",
     videoSaved: "视频已保存",
+    liveSaved: "直播记录已保存",
     contentType: "内容类型",
     likes: "点赞",
     comments: "评论",
     shares: "分享",
     clicks: "点击",
     videoStatus: "视频状态",
+    livePlatform: "直播平台",
+    liveDate: "直播日期",
+    startTime: "开始时间",
+    endTime: "结束时间",
+    duration: "直播时长",
+    liveLink: "直播间链接",
+    slotFee: "坑位费 / 固定费用",
+    liveViews: "直播观看人数",
+    peakOnline: "峰值在线人数",
+    liveStatus: "直播状态",
+    contentVideo: "视频",
+    contentLive: "直播",
+    liveReviewNeeded: "直播已结束待复盘",
     videoCount: "视频数",
     roiByCreator: "按达人看",
     roiByVideo: "按视频看",
+    roiByLive: "按直播看",
     roiBySku: "按 SKU 看",
     editCreator: "修改达人",
     confirmDelete: "确认删除这个达人？",
     confirmDeleteVideo: "确认删除这条视频？",
+    confirmDeleteLive: "确认删除这条直播记录？",
     confirmDeleteSku: "确认删除这个 SKU？",
     confirmDeleteSample: "确认删除这条样品单？",
     reportDone: "日报已生成：包含 GMV、ROI、异常和明日动作",
@@ -241,23 +261,43 @@ const I18N = {
     delete: "Excluir",
     actions: "Ações",
     viewVideos: "Ver vídeos",
+    viewLives: "Ver lives",
     videoRecords: "Registros de vídeo",
+    liveRecords: "Registros de live",
     addVideo: "Adicionar vídeo",
+    addLive: "Adicionar live",
     saveVideo: "Salvar vídeo",
+    saveLive: "Salvar live",
     videoSaved: "Vídeo salvo",
+    liveSaved: "Live salva",
     contentType: "Tipo de conteúdo",
     likes: "Curtidas",
     comments: "Comentários",
     shares: "Compartilhamentos",
     clicks: "Cliques",
     videoStatus: "Status do vídeo",
+    livePlatform: "Plataforma da live",
+    liveDate: "Data da live",
+    startTime: "Início",
+    endTime: "Fim",
+    duration: "Duração",
+    liveLink: "Link da live",
+    slotFee: "Fee fixo",
+    liveViews: "Visualizações da live",
+    peakOnline: "Pico online",
+    liveStatus: "Status da live",
+    contentVideo: "Vídeos",
+    contentLive: "Lives",
+    liveReviewNeeded: "Live encerrada sem revisão",
     videoCount: "Vídeos",
     roiByCreator: "Por criador",
     roiByVideo: "Por vídeo",
+    roiByLive: "Por live",
     roiBySku: "Por SKU",
     editCreator: "Editar criador",
     confirmDelete: "Confirmar exclusão deste criador?",
     confirmDeleteVideo: "Confirmar exclusão deste vídeo?",
+    confirmDeleteLive: "Confirmar exclusão desta live?",
     confirmDeleteSku: "Confirmar exclusão deste SKU?",
     confirmDeleteSample: "Confirmar exclusão desta amostra?",
     reportDone: "Relatório gerado com GMV, ROI, alertas e ações",
@@ -316,6 +356,11 @@ const STATUS_PT = {
   "已发布": "Publicado",
   "复投": "Reinvestimento",
   "暂停": "Pausado",
+  "待排期": "Aguardando agenda",
+  "已确认": "Confirmado",
+  "直播中": "Ao vivo",
+  "已结束": "Encerrada",
+  "复盘完成": "Revisão feita",
 };
 
 const NEXT_PT = {
@@ -366,6 +411,11 @@ const baseVideos = [
   { id: "video:base:mae:1", creator: "@mae.luiza", creatorId: "base:@mae.luiza", sku: "儿童保温杯", date: "未发布", link: "", type: "开箱", views: 0, likes: 0, comments: 0, shares: 0, clicks: 0, orders: 0, gmv: 0, refunds: 0, cost: 0, profit: 0, roi: 0, status: "待发布", compliant: false, signal: "待排期" },
 ];
 
+const baseLives = [
+  { id: "live:base:beleza:1", creator: "@beleza.maria", creatorId: "base:@beleza.maria", platform: "TikTok", date: "2026-06-15", startTime: "20:00", endTime: "22:00", duration: "2h", link: "", sku: "电动清洁刷", sampleCost: 90, slotFee: 300, commission: "18%", views: 18400, peakOnline: 1260, clicks: 980, orders: 86, gmv: 3560, refunds: 0, cost: 390, profit: 963, roi: 2.47, status: "复盘完成", owner: "Ana", notes: "清洁场景转化好" },
+  { id: "live:base:casa:1", creator: "@casa.ana", creatorId: "base:@casa.ana", platform: "Kwai", date: "2026-06-14", startTime: "19:30", endTime: "21:00", duration: "1.5h", link: "", sku: "收纳套装", sampleCost: 56, slotFee: 120, commission: "16%", views: 4200, peakOnline: 280, clicks: 0, orders: 0, gmv: 0, refunds: 0, cost: 176, profit: -176, roi: -1, status: "已结束", owner: "Carla", notes: "" },
+];
+
 const baseSkus = [
   { sku: "电动清洁刷", price: 89.9, cost: 31, commission: "18%", stock: 248, samples: 9, score: 92, fit: "家居清洁 / 开箱测评" },
   { sku: "迷你风扇", price: 49.9, cost: 18, commission: "15%", stock: 610, samples: 38, score: 84, fit: "夏季场景 / 通勤" },
@@ -377,6 +427,7 @@ const baseSkus = [
 let samples = loadSamples();
 let skus = loadSkus();
 let videos = loadVideos();
+let lives = loadLives();
 
 const team = [
   { name: "Ana", contacted: 34, replied: 15, samples: 8, live: 5, gmv: 15680, overdue: 2 },
@@ -397,6 +448,9 @@ const state = {
   editingSampleId: "",
   activeVideoCreatorId: "",
   editingVideoId: "",
+  activeLiveCreatorId: "",
+  editingLiveId: "",
+  contentMode: "video",
   roiMode: "creator",
 };
 
@@ -416,6 +470,9 @@ const sampleForm = document.querySelector("#sampleForm");
 const videoModal = document.querySelector("#videoModal");
 const videoForm = document.querySelector("#videoForm");
 const videoList = document.querySelector("#videoList");
+const liveModal = document.querySelector("#liveModal");
+const liveForm = document.querySelector("#liveForm");
+const liveList = document.querySelector("#liveList");
 const dateInput = document.querySelector("#dateInput");
 
 function t(key) {
@@ -520,7 +577,8 @@ function renderMemoryOptions() {
     ...memoryValues("creatorOpsMemoryOwners"),
     ...baseCreators.map((creator) => creator.owner),
     ...creators.map((creator) => creator.owner),
-    ...samples.map((sample) => sample.owner)
+    ...samples.map((sample) => sample.owner),
+    ...lives.map((live) => live.owner)
   ]);
   renderOptions("skuOptions", [
     ...memoryValues("creatorOpsMemorySkus"),
@@ -528,12 +586,14 @@ function renderMemoryOptions() {
     ...skus.map((item) => item.sku),
     ...creators.map((creator) => creator.sku),
     ...samples.map((sample) => sample.sku),
-    ...videos.map((video) => video.sku)
+    ...videos.map((video) => video.sku),
+    ...lives.map((live) => live.sku)
   ]);
   renderOptions("sampleCostOptions", [
     ...memoryValues("creatorOpsMemorySampleCosts"),
     ...creators.map((creator) => creator.sampleCost),
-    ...samples.map((sample) => sample.cost)
+    ...samples.map((sample) => sample.cost),
+    ...lives.map((live) => live.sampleCost)
   ]);
 }
 
@@ -571,8 +631,24 @@ function loadVideos() {
   }
 }
 
+function loadLives() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("creatorOpsLives") || "[]");
+    const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedLives") || "[]");
+    const byId = new Map(baseLives.map((item) => [item.id, item]));
+    saved.forEach((item) => byId.set(item.id, { ...byId.get(item.id), ...item }));
+    return Array.from(byId.values()).filter((live) => !deleted.includes(live.id));
+  } catch {
+    return [...baseLives];
+  }
+}
+
 function createVideoId() {
   return `video:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createLiveId() {
+  return `live:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function videoFinancials(video) {
@@ -629,12 +705,89 @@ function deleteVideoRecord(videoId) {
   videos = loadVideos();
 }
 
+function liveFinancials(live) {
+  const gmv = Number(live.gmv || 0);
+  const orders = Number(live.orders || 0);
+  const sampleCost = Number(live.sampleCost || 0);
+  const slotFee = Number(live.slotFee || 0);
+  const cost = Number(live.cost || sampleCost + slotFee + Math.round(gmv * 0.16));
+  const profit = Number(live.profit || Math.round(gmv * 0.38 - cost));
+  const roi = cost ? profit / cost : 0;
+  return { gmv, orders, sampleCost, slotFee, cost, profit, roi };
+}
+
+function saveLiveRecord(record) {
+  const saved = JSON.parse(localStorage.getItem("creatorOpsLives") || "[]");
+  const deleted = JSON.parse(localStorage.getItem("creatorOpsDeletedLives") || "[]").filter((id) => id !== record.id);
+  const financials = liveFinancials(record);
+  const live = {
+    id: record.id || createLiveId(),
+    creatorId: record.creatorId,
+    creator: record.creator,
+    platform: record.platform || "TikTok",
+    date: record.date || state.date,
+    startTime: record.startTime || "",
+    endTime: record.endTime || "",
+    duration: record.duration || "",
+    link: record.link || "",
+    sku: record.sku || "",
+    sampleCost: financials.sampleCost,
+    slotFee: financials.slotFee,
+    commission: record.commission || "",
+    views: Number(record.views || 0),
+    peakOnline: Number(record.peakOnline || 0),
+    clicks: Number(record.clicks || 0),
+    orders: financials.orders,
+    gmv: financials.gmv,
+    refunds: Number(record.refunds || 0),
+    cost: financials.cost,
+    profit: financials.profit,
+    roi: financials.roi,
+    status: record.status || "待排期",
+    owner: record.owner || "",
+    notes: record.notes || ""
+  };
+  const existingIndex = saved.findIndex((item) => item.id === live.id);
+  if (existingIndex >= 0) saved[existingIndex] = live;
+  else saved.push(live);
+  localStorage.setItem("creatorOpsLives", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedLives", JSON.stringify(deleted));
+  rememberValue("creatorOpsMemorySkus", live.sku);
+  rememberValue("creatorOpsMemoryOwners", live.owner);
+  rememberValue("creatorOpsMemorySampleCosts", live.sampleCost);
+  lives = loadLives();
+}
+
+function deleteLiveRecord(liveId) {
+  const saved = JSON.parse(localStorage.getItem("creatorOpsLives") || "[]").filter((live) => live.id !== liveId);
+  const deleted = new Set(JSON.parse(localStorage.getItem("creatorOpsDeletedLives") || "[]"));
+  deleted.add(liveId);
+  localStorage.setItem("creatorOpsLives", JSON.stringify(saved));
+  localStorage.setItem("creatorOpsDeletedLives", JSON.stringify([...deleted]));
+  lives = loadLives();
+}
+
 function videosForCreator(creatorId, creatorName) {
   return videos.filter((video) => video.creatorId === creatorId || video.creator === creatorName);
 }
 
+function livesForCreator(creatorId, creatorName) {
+  return lives.filter((live) => live.creatorId === creatorId || live.creator === creatorName);
+}
+
 function creatorVideoSummary(creator) {
   const list = videosForCreator(creator.id, creator.name);
+  return {
+    count: list.length,
+    views: list.reduce((sum, item) => sum + Number(item.views || 0), 0),
+    gmv: list.reduce((sum, item) => sum + Number(item.gmv || 0), 0),
+    orders: list.reduce((sum, item) => sum + Number(item.orders || 0), 0),
+    profit: list.reduce((sum, item) => sum + Number(item.profit || 0), 0)
+  };
+}
+
+function creatorLiveSummary(creator) {
+  const list = livesForCreator(creator.id, creator.name);
   return {
     count: list.length,
     views: list.reduce((sum, item) => sum + Number(item.views || 0), 0),
@@ -995,6 +1148,15 @@ function receivedOverdueVideoSamples() {
   });
 }
 
+function liveReviewAlerts() {
+  return lives.filter((live) => {
+    if (!live.date || live.date === "-") return false;
+    const alreadyEnded = live.date < state.date || ["已结束", "复盘完成"].includes(live.status);
+    const missingResult = Number(live.gmv || 0) <= 0 || Number(live.orders || 0) <= 0;
+    return alreadyEnded && missingResult && live.status !== "复盘完成";
+  });
+}
+
 function creatorRows(list) {
   return list.map((creator) => {
     const summary = creatorVideoSummary(creator);
@@ -1014,6 +1176,7 @@ function creatorRows(list) {
         <td>
           <span class="table-actions">
             <button type="button" class="ghost" data-view-videos="${creator.id}">${t("viewVideos")}</button>
+            <button type="button" class="ghost" data-view-lives="${creator.id}">${t("viewLives")}</button>
             <button type="button" class="ghost" data-edit-creator="${creator.id}">${t("edit")}</button>
             <button type="button" class="danger" data-delete-creator="${creator.id}">${t("delete")}</button>
           </span>
@@ -1054,6 +1217,7 @@ function renderDashboard() {
   const list = filteredCreators();
   const progress = selectedProgress();
   const videoReminderSamples = receivedOverdueVideoSamples();
+  const liveReviews = liveReviewAlerts();
   const sampleRisk = videoReminderSamples.length || progress.overdue || samples.filter((item) => item.status === "已签收" && item.deadline < state.date).length;
   const emptyNote = progress.gmv === 0 ? `<div class="card panel"><strong>${t("dailyProgress")}</strong><p class="muted">${t("noDailyData")}</p></div>` : "";
   return `
@@ -1068,6 +1232,7 @@ function renderDashboard() {
         <div class="panel-head"><h2>${t("todayMustHandle")}</h2><span class="muted">${t("riskFirst")}</span></div>
         <div class="task-list">
           <div class="task high"><div><strong>${sampleRisk} ${t("noVideoAfterReceived")}</strong><span class="muted">${t("noVideoAfterReceivedHint")}</span></div><span class="pill bad">${t("high")}</span></div>
+          <div class="task high"><div><strong>${liveReviews.length} ${t("liveReviewNeeded")}</strong><span class="muted">${state.lang === "pt" ? "Preencher GMV, pedidos e revisão da live" : "补齐 GMV、订单数和直播复盘备注"}</span></div><span class="pill bad">${t("high")}</span></div>
           <div class="task medium"><div><strong>${progress.highRisk || 0} ${t("highViewsWeakOrders")}</strong><span class="muted">${t("checkLinkCoupon")}</span></div><span class="pill warn">${t("medium")}</span></div>
           <div class="task medium"><div><strong>${t("lowStock")}</strong><span class="muted">${t("topTierOnly")}</span></div><span class="pill warn">${t("medium")}</span></div>
           <div class="task"><div><strong>${t("teamProgress")} ${pct((progress.contacted || 0) / 150)}</strong><span class="muted">${t("firstContactLeft")}</span></div><span class="pill ok">${t("low")}</span></div>
@@ -1152,10 +1317,16 @@ function renderSamples() {
 }
 
 function renderContent() {
+  const modeButtons = `<div class="row-actions">
+    <button type="button" class="${state.contentMode === "video" ? "" : "ghost"}" data-content-mode="video">${t("contentVideo")}</button>
+    <button type="button" class="${state.contentMode === "live" ? "" : "ghost"}" data-content-mode="live">${t("contentLive")}</button>
+  </div>`;
+  const body = state.contentMode === "live" ? renderLiveRows(lives) : renderVideoRows(videos);
   return `
     <section class="card panel">
       <div class="panel-head"><h2>${t("content")}</h2><button type="button" data-action="${t("sendBrief")}">${t("sendBrief")}</button></div>
-      ${renderVideoRows(videos)}
+      ${modeButtons}
+      ${body}
     </section>
   `;
 }
@@ -1184,6 +1355,7 @@ function renderRoi() {
   const modeButtons = `<div class="row-actions">
     <button type="button" class="${state.roiMode === "creator" ? "" : "ghost"}" data-roi-mode="creator">${t("roiByCreator")}</button>
     <button type="button" class="${state.roiMode === "video" ? "" : "ghost"}" data-roi-mode="video">${t("roiByVideo")}</button>
+    <button type="button" class="${state.roiMode === "live" ? "" : "ghost"}" data-roi-mode="live">${t("roiByLive")}</button>
     <button type="button" class="${state.roiMode === "sku" ? "" : "ghost"}" data-roi-mode="sku">${t("roiBySku")}</button>
   </div>`;
   const byCreator = () => table([t("creator"), t("videoCount"), t("gmv"), t("profit"), "ROI", state.lang === "pt" ? "Decisão" : "决策"], creators.map((c) => {
@@ -1194,6 +1366,7 @@ function renderRoi() {
     return `<tr><td>${c.name}</td><td>${summary.count}</td><td>${brl(summary.gmv || c.gmv)}</td><td>${brl(summary.profit || c.profit)}</td><td>${roi ? roi.toFixed(2) : "-"}</td><td>${decisions[c.tier]}</td></tr>`;
   }).join(""));
   const byVideo = () => renderVideoRows(videos);
+  const byLive = () => renderLiveRows(lives);
   const bySku = () => {
     const grouped = new Map();
     videos.forEach((video) => {
@@ -1205,9 +1378,18 @@ function renderRoi() {
       current.orders += Number(video.orders || 0);
       grouped.set(video.sku, current);
     });
+    lives.forEach((live) => {
+      const current = grouped.get(live.sku) || { sku: live.sku, videos: 0, gmv: 0, profit: 0, cost: 0, orders: 0 };
+      current.videos += 1;
+      current.gmv += Number(live.gmv || 0);
+      current.profit += Number(live.profit || 0);
+      current.cost += Number(live.cost || 0);
+      current.orders += Number(live.orders || 0);
+      grouped.set(live.sku, current);
+    });
     return table([t("sku"), t("videoCount"), t("orders"), t("gmv"), t("profit"), "ROI"], Array.from(grouped.values()).map((item) => `<tr><td>${item.sku}</td><td>${item.videos}</td><td>${item.orders}</td><td>${brl(item.gmv)}</td><td>${brl(item.profit)}</td><td>${item.cost ? (item.profit / item.cost).toFixed(2) : "-"}</td></tr>`).join(""));
   };
-  const body = state.roiMode === "video" ? byVideo() : state.roiMode === "sku" ? bySku() : byCreator();
+  const body = state.roiMode === "video" ? byVideo() : state.roiMode === "live" ? byLive() : state.roiMode === "sku" ? bySku() : byCreator();
   return `
     <section class="card panel">
       <div class="panel-head"><h2>${t("roi")}</h2><span class="muted">${state.lang === "pt" ? "Lucro = GMV - produto - taxas - frete - comissão - amostra - reembolso" : "利润 = GMV - 商品成本 - 平台费 - 物流 - 佣金 - 样品 - 退款"}</span></div>
@@ -1281,6 +1463,9 @@ function renderStaticTexts() {
   document.querySelector("#videoModalTitle").textContent = t("videoRecords");
   document.querySelector("#videoModalSubtitle").textContent = state.lang === "pt" ? "Um criador pode ter vários vídeos." : "一个达人可以添加多条视频。";
   document.querySelector("#saveVideoBtn").textContent = t("saveVideo");
+  document.querySelector("#liveModalTitle").textContent = t("liveRecords");
+  document.querySelector("#liveModalSubtitle").textContent = state.lang === "pt" ? "Um criador pode ter várias lives." : "一个达人可以添加多场直播。";
+  document.querySelector("#saveLiveBtn").textContent = t("saveLive");
   document.querySelector("#sampleModalTitle").textContent = state.editingSampleId ? t("editSample") : t("addSample");
   document.querySelector("#sampleModalSubtitle").textContent = t("addSampleHint");
   document.querySelector("#saveSampleBtn").textContent = t("saveSample");
@@ -1291,6 +1476,9 @@ function renderStaticTexts() {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
   document.querySelectorAll("[data-close-video-modal]").forEach((node) => {
+    if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
+  });
+  document.querySelectorAll("[data-close-live-modal]").forEach((node) => {
     if (node.tagName === "BUTTON" && !node.classList.contains("icon-btn")) node.textContent = t("cancel");
   });
   document.querySelectorAll("[data-close-sample-modal]").forEach((node) => {
@@ -1455,6 +1643,35 @@ function renderVideoRows(list) {
   `).join(""));
 }
 
+function renderLiveRows(list) {
+  return table([t("creator"), t("livePlatform"), t("liveDate"), t("duration"), t("sku"), t("sampleCost"), t("slotFee"), t("liveViews"), t("peakOnline"), t("clicks"), t("orders"), t("gmv"), t("profit"), "ROI", t("liveStatus"), t("owner"), t("actions")], list.map((live) => `
+    <tr>
+      <td>${live.creator}</td>
+      <td>${live.platform}</td>
+      <td>${live.date}</td>
+      <td>${live.duration || `${live.startTime || "-"}-${live.endTime || "-"}`}</td>
+      <td>${live.sku}</td>
+      <td>${brl(live.sampleCost || 0)}</td>
+      <td>${brl(live.slotFee || 0)}</td>
+      <td>${Number(live.views || 0).toLocaleString("pt-BR")}</td>
+      <td>${Number(live.peakOnline || 0).toLocaleString("pt-BR")}</td>
+      <td>${live.clicks || 0}</td>
+      <td>${live.orders || 0}</td>
+      <td>${brl(live.gmv || 0)}</td>
+      <td>${brl(live.profit || 0)}</td>
+      <td>${live.roi ? Number(live.roi).toFixed(2) : "-"}</td>
+      <td>${statusText(live.status || "-")}</td>
+      <td>${live.owner || "-"}</td>
+      <td>
+        <span class="table-actions">
+          <button type="button" class="ghost" data-edit-live="${live.id}">${t("edit")}</button>
+          <button type="button" class="danger" data-delete-live="${live.id}">${t("delete")}</button>
+        </span>
+      </td>
+    </tr>
+  `).join(""));
+}
+
 function openVideoModal(creatorId) {
   const creator = creators.find((item) => item.id === creatorId);
   if (!creator) return;
@@ -1475,6 +1692,31 @@ function closeVideoModal() {
   state.activeVideoCreatorId = "";
   videoModal.classList.remove("open");
   videoModal.setAttribute("aria-hidden", "true");
+}
+
+function openLiveModal(creatorId) {
+  const creator = creators.find((item) => item.id === creatorId);
+  if (!creator) return;
+  state.activeLiveCreatorId = creatorId;
+  state.editingLiveId = "";
+  liveForm.reset();
+  liveForm.elements.livePlatform.value = creator.platform || "TikTok";
+  liveForm.elements.liveDate.value = state.date;
+  liveForm.elements.sku.value = creator.sku || "";
+  liveForm.elements.owner.value = creator.owner || "";
+  const list = livesForCreator(creator.id, creator.name);
+  liveList.innerHTML = `<h3>${creator.name} - ${t("liveRecords")}</h3>${list.length ? renderLiveRows(list) : `<p class="muted">${state.lang === "pt" ? "Nenhuma live registrada." : "暂无直播记录。"}</p>`}`;
+  liveModal.classList.add("open");
+  liveModal.setAttribute("aria-hidden", "false");
+  renderStaticTexts();
+  liveForm.elements.liveDate.focus();
+}
+
+function closeLiveModal() {
+  state.editingLiveId = "";
+  state.activeLiveCreatorId = "";
+  liveModal.classList.remove("open");
+  liveModal.setAttribute("aria-hidden", "true");
 }
 
 function openEditVideo(videoId) {
@@ -1503,6 +1745,40 @@ function openEditVideo(videoId) {
   videoForm.elements.refunds.value = video.refunds || 0;
   videoForm.elements.status.value = video.status || "已发布";
   videoForm.elements.link.focus();
+}
+
+function openEditLive(liveId) {
+  const live = lives.find((item) => item.id === liveId);
+  if (!live) return;
+  const creator = creators.find((item) => item.id === live.creatorId || item.name === live.creator);
+  if (!creator) return;
+  state.editingLiveId = liveId;
+  state.activeLiveCreatorId = creator.id;
+  const list = livesForCreator(creator.id, creator.name);
+  liveList.innerHTML = `<h3>${creator.name} - ${t("liveRecords")}</h3>${list.length ? renderLiveRows(list) : `<p class="muted">${state.lang === "pt" ? "Nenhuma live registrada." : "暂无直播记录。"}</p>`}`;
+  liveModal.classList.add("open");
+  liveModal.setAttribute("aria-hidden", "false");
+  renderStaticTexts();
+  liveForm.elements.livePlatform.value = live.platform || "TikTok";
+  liveForm.elements.liveDate.value = live.date || "";
+  liveForm.elements.startTime.value = live.startTime || "";
+  liveForm.elements.endTime.value = live.endTime || "";
+  liveForm.elements.duration.value = live.duration || "";
+  liveForm.elements.liveLink.value = live.link || "";
+  liveForm.elements.sku.value = live.sku || "";
+  liveForm.elements.sampleCost.value = live.sampleCost || 0;
+  liveForm.elements.slotFee.value = live.slotFee || 0;
+  liveForm.elements.commission.value = live.commission || "";
+  liveForm.elements.views.value = live.views || 0;
+  liveForm.elements.peakOnline.value = live.peakOnline || 0;
+  liveForm.elements.clicks.value = live.clicks || 0;
+  liveForm.elements.orders.value = live.orders || 0;
+  liveForm.elements.gmv.value = live.gmv || 0;
+  liveForm.elements.refunds.value = live.refunds || 0;
+  liveForm.elements.status.value = live.status || "待排期";
+  liveForm.elements.owner.value = live.owner || "";
+  liveForm.elements.notes.value = live.notes || "";
+  liveForm.elements.liveDate.focus();
 }
 
 function addCreatorFromForm(formData) {
@@ -1608,6 +1884,9 @@ document.body.addEventListener("click", (event) => {
   const closeVideoTarget = event.target.closest("[data-close-video-modal]");
   if (closeVideoTarget) closeVideoModal();
 
+  const closeLiveTarget = event.target.closest("[data-close-live-modal]");
+  if (closeLiveTarget) closeLiveModal();
+
   const closeSampleTarget = event.target.closest("[data-close-sample-modal]");
   if (closeSampleTarget) closeSampleModal();
 
@@ -1674,9 +1953,21 @@ document.body.addEventListener("click", (event) => {
     return;
   }
 
+  const viewLivesTarget = event.target.closest("[data-view-lives]");
+  if (viewLivesTarget) {
+    openLiveModal(viewLivesTarget.dataset.viewLives);
+    return;
+  }
+
   const editVideoTarget = event.target.closest("[data-edit-video]");
   if (editVideoTarget) {
     openEditVideo(editVideoTarget.dataset.editVideo);
+    return;
+  }
+
+  const editLiveTarget = event.target.closest("[data-edit-live]");
+  if (editLiveTarget) {
+    openEditLive(editLiveTarget.dataset.editLive);
     return;
   }
 
@@ -1689,6 +1980,25 @@ document.body.addEventListener("click", (event) => {
       if (shouldRefreshVideoModal) openVideoModal(state.activeVideoCreatorId);
       showToast(t("deleted"));
     }
+    return;
+  }
+
+  const deleteLiveTarget = event.target.closest("[data-delete-live]");
+  if (deleteLiveTarget) {
+    if (window.confirm(t("confirmDeleteLive"))) {
+      const shouldRefreshLiveModal = liveModal.classList.contains("open") && Boolean(state.activeLiveCreatorId);
+      deleteLiveRecord(deleteLiveTarget.dataset.deleteLive);
+      render();
+      if (shouldRefreshLiveModal) openLiveModal(state.activeLiveCreatorId);
+      showToast(t("deleted"));
+    }
+    return;
+  }
+
+  const contentModeTarget = event.target.closest("[data-content-mode]");
+  if (contentModeTarget) {
+    state.contentMode = contentModeTarget.dataset.contentMode;
+    render();
     return;
   }
 
@@ -1848,6 +2158,43 @@ videoForm.addEventListener("submit", (event) => {
   render();
   openVideoModal(creator.id);
   showToast(wasEditing ? t("updated") : t("videoSaved"));
+});
+
+liveForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const creator = creators.find((item) => item.id === state.activeLiveCreatorId);
+  if (!creator) return;
+  const formData = new FormData(liveForm);
+  const wasEditing = Boolean(state.editingLiveId);
+  saveLiveRecord({
+    id: state.editingLiveId || "",
+    creatorId: creator.id,
+    creator: creator.name,
+    platform: formData.get("livePlatform"),
+    date: formData.get("liveDate") || state.date,
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime"),
+    duration: formData.get("duration"),
+    link: formData.get("liveLink"),
+    sku: formData.get("sku") || creator.sku,
+    sampleCost: formData.get("sampleCost"),
+    slotFee: formData.get("slotFee"),
+    commission: formData.get("commission"),
+    views: formData.get("views"),
+    peakOnline: formData.get("peakOnline"),
+    clicks: formData.get("clicks"),
+    orders: formData.get("orders"),
+    gmv: formData.get("gmv"),
+    refunds: formData.get("refunds"),
+    status: formData.get("status"),
+    owner: formData.get("owner") || creator.owner,
+    notes: formData.get("notes")
+  });
+  state.editingLiveId = "";
+  liveForm.reset();
+  render();
+  openLiveModal(creator.id);
+  showToast(wasEditing ? t("updated") : t("liveSaved"));
 });
 
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
