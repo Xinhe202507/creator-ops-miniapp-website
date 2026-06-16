@@ -143,11 +143,44 @@
     return state.profile;
   }
 
+  function enterDemoMode(email = "") {
+    // demo login: Supabase is not configured yet, so this keeps the login screen visible
+    // while allowing the current static site to be tested with local browser storage.
+    state.profile = {
+      user_id: "demo",
+      email,
+      role: "admin",
+      owner_name: "Demo"
+    };
+    state.ready = true;
+    document.body.dataset.role = "admin";
+    document.body.dataset.owner = "Demo";
+    hideLogin();
+    return state.profile;
+  }
+
+  function bindLoginForm(renderApp) {
+    document.querySelector("#loginForm")?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      try {
+        if (loginMessage()) loginMessage().textContent = "登录中...";
+        if (!configured || !state.client) {
+          enterDemoMode(formData.get("email"));
+        } else {
+          await signIn(formData.get("email"), formData.get("password"));
+        }
+        renderApp();
+      } catch (error) {
+        showLogin(error.message || "登录失败");
+      }
+    });
+  }
+
   async function boot(renderApp) {
     if (!configured || !window.supabase?.createClient) {
-      state.ready = true;
-      document.body.dataset.role = "admin";
-      renderApp();
+      bindLoginForm(renderApp);
+      showLogin("Supabase 未配置：请输入任意账号密码进入本地演示模式");
       return;
     }
 
@@ -172,17 +205,7 @@
       showLogin("请输入账号密码登录");
     }
 
-    document.querySelector("#loginForm")?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.currentTarget);
-      try {
-        if (loginMessage()) loginMessage().textContent = "登录中...";
-        await signIn(formData.get("email"), formData.get("password"));
-        renderApp();
-      } catch (error) {
-        showLogin(error.message || "登录失败");
-      }
-    });
+    bindLoginForm(renderApp);
   }
 
   window.CreatorCloud = {
