@@ -83,6 +83,24 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <section id="loginScreen" class="login-screen" aria-hidden="true">
+    <form id="loginForm" class="login-card" autocomplete="on">
+      <div class="brand login-brand">
+        <div class="brand-mark">分</div>
+        <div>
+          <strong>达人分销中台</strong>
+          <span>Supabase Cloud Sync</span>
+        </div>
+      </div>
+      <h1>账号登录</h1>
+      <p class="muted">登录后，电脑和手机会同步同一份达人、SKU、样品、视频和直播数据。</p>
+      <label>Email<input name="email" type="email" required placeholder="name@company.com"></label>
+      <label>密码<input name="password" type="password" required placeholder="Password"></label>
+      <button type="submit">登录</button>
+      <p id="loginMessage" class="muted"></p>
+    </form>
+  </section>
+
   <div id="creatorModal" class="modal" aria-hidden="true">
     <div class="modal-backdrop" data-close-modal></div>
     <form id="creatorForm" class="modal-card" autocomplete="off">
@@ -307,6 +325,9 @@
   <datalist id="skuOptions"></datalist>
   <datalist id="sampleCostOptions"></datalist>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-cloud.js"></script>
   <script src="progress-utils.js"></script>
   <script src="app.js"></script>
 </body>

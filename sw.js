@@ -1,9 +1,11 @@
-const CACHE_NAME = "creator-ops-miniapp-v1";
+const CACHE_NAME = "creator-ops-miniapp-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./supabase-config.js",
+  "./supabase-cloud.js",
   "./progress-utils.js",
   "./manifest.webmanifest",
   "./icon.svg"

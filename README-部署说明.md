@@ -93,6 +93,44 @@ http://192.168.1.23:8080/
 4. 等待部署完成
 5. 复制平台生成的网址发给团队使用
 
+## Supabase 云端同步配置
+
+当前版本已支持 Supabase 账号密码登录和云端同步。未配置 Supabase 时，网站仍可作为本地演示版本使用；配置后，不同电脑和手机登录同一套账号体系即可看到同一份数据。
+
+配置步骤：
+
+1. 在 Supabase 新建项目。
+2. 打开 Supabase SQL Editor，执行 `supabase-schema.sql`。
+3. 在 Supabase Authentication 里创建用户账号。
+4. 在 `creator_ops_users` 表里给用户配置角色：
+
+   - `admin`：管理员，可新增、修改、删除全部数据
+   - `operator`：运营，只能操作自己负责人的数据
+   - `readonly`：只读，只能查看，不能修改删除
+
+5. 打开 `supabase-config.js`，填写项目参数：
+
+   ```js
+   window.CREATOR_OPS_SUPABASE = {
+     SUPABASE_URL: "https://你的项目.supabase.co",
+     SUPABASE_ANON_KEY: "你的 anon key"
+   };
+   ```
+
+6. 重新上传网站文件到 GitHub Pages / Vercel / Netlify。
+
+同步范围：
+
+- 达人 CRM 档案
+- SKU
+- 样品单
+- 视频记录
+- 直播记录
+- 删除记录
+- 负责人 / SKU / 样品成本记忆选项
+
+数据同步方式：登录后网站会先从 Supabase 拉取云端数据覆盖本地缓存；后续新增、修改、删除会自动写回 Supabase。只读账号会隐藏或拦截写入操作。
+
 ## 手机上添加到桌面
 
 通过 `https://` 链接打开后：

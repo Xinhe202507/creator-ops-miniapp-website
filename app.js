@@ -479,6 +479,36 @@ function t(key) {
   return I18N[state.lang][key] || I18N.zh[key] || key;
 }
 
+function reloadAllData() {
+  creators = loadCreators();
+  samples = loadSamples();
+  skus = loadSkus();
+  videos = loadVideos();
+  lives = loadLives();
+}
+
+function cloudRole() {
+  return window.CreatorCloud?.role?.() || "admin";
+}
+
+function cloudOwner() {
+  return window.CreatorCloud?.ownerName?.() || "";
+}
+
+function canWriteRecord(owner = "") {
+  const role = cloudRole();
+  if (role === "admin") return true;
+  if (role === "readonly") return false;
+  if (role === "operator") return window.CreatorCloud?.canWriteRecord ? window.CreatorCloud.canWriteRecord(owner) : true;
+  return window.CreatorCloud?.canWriteRecord ? window.CreatorCloud.canWriteRecord(owner) : true;
+}
+
+function assertWritable(owner = "") {
+  const ok = window.CreatorCloud?.assertWritable ? window.CreatorCloud.assertWritable(owner) : true;
+  if (!ok) showToast(state.lang === "pt" ? "Sem permissão para editar este registro" : "当前账号没有权限修改这条记录");
+  return ok;
+}
+
 function statusText(value) {
   return state.lang === "pt" ? (STATUS_PT[value] || value) : value;
 }
@@ -1160,6 +1190,9 @@ function liveReviewAlerts() {
 function creatorRows(list) {
   return list.map((creator) => {
     const summary = creatorVideoSummary(creator);
+    const actions = canWriteRecord(creator.owner)
+      ? `<button type="button" class="ghost" data-edit-creator="${creator.id}">${t("edit")}</button><button type="button" class="danger" data-delete-creator="${creator.id}">${t("delete")}</button>`
+      : "";
     return `
       <tr>
         <td><strong>${creator.name}</strong></td>
@@ -1177,8 +1210,7 @@ function creatorRows(list) {
           <span class="table-actions">
             <button type="button" class="ghost" data-view-videos="${creator.id}">${t("viewVideos")}</button>
             <button type="button" class="ghost" data-view-lives="${creator.id}">${t("viewLives")}</button>
-            <button type="button" class="ghost" data-edit-creator="${creator.id}">${t("edit")}</button>
-            <button type="button" class="danger" data-delete-creator="${creator.id}">${t("delete")}</button>
+            ${actions}
           </span>
         </td>
       </tr>
@@ -1870,7 +1902,10 @@ document.querySelectorAll("[data-lang]").forEach((button) => {
   });
 });
 
-document.querySelector("#addCreatorBtn").addEventListener("click", openModal);
+document.querySelector("#addCreatorBtn").addEventListener("click", () => {
+  if (!assertWritable(cloudOwner())) return;
+  openModal();
+});
 
 document.querySelector("#exportBtn").addEventListener("click", () => showToast(t("reportDone")));
 
@@ -1899,30 +1934,35 @@ document.body.addEventListener("click", (event) => {
 
   const openCreatorTarget = event.target.closest("[data-open-creator]");
   if (openCreatorTarget) {
+    if (!assertWritable(cloudOwner())) return;
     openModal();
     return;
   }
 
   const openSkuTarget = event.target.closest("[data-open-sku]");
   if (openSkuTarget) {
+    if (!assertWritable(cloudOwner())) return;
     openSkuModal();
     return;
   }
 
   const openSampleTarget = event.target.closest("[data-open-sample]");
   if (openSampleTarget) {
+    if (!assertWritable(cloudOwner())) return;
     openSampleModal();
     return;
   }
 
   const editSkuTarget = event.target.closest("[data-edit-sku]");
   if (editSkuTarget) {
+    if (!assertWritable(cloudOwner())) return;
     openEditSkuModal(editSkuTarget.dataset.editSku);
     return;
   }
 
   const deleteSkuTarget = event.target.closest("[data-delete-sku]");
   if (deleteSkuTarget) {
+    if (!assertWritable("")) return;
     if (window.confirm(t("confirmDeleteSku"))) {
       deleteSkuRecord(deleteSkuTarget.dataset.deleteSku);
       render();
@@ -1933,12 +1973,16 @@ document.body.addEventListener("click", (event) => {
 
   const editSampleTarget = event.target.closest("[data-edit-sample]");
   if (editSampleTarget) {
+    const sample = samples.find((item) => item.id === editSampleTarget.dataset.editSample);
+    if (!assertWritable(sample?.owner || "")) return;
     openEditSampleModal(editSampleTarget.dataset.editSample);
     return;
   }
 
   const deleteSampleTarget = event.target.closest("[data-delete-sample]");
   if (deleteSampleTarget) {
+    const sample = samples.find((item) => item.id === deleteSampleTarget.dataset.deleteSample);
+    if (!assertWritable(sample?.owner || "")) return;
     if (window.confirm(t("confirmDeleteSample"))) {
       deleteSampleRecord(deleteSampleTarget.dataset.deleteSample);
       render();
@@ -1961,18 +2005,26 @@ document.body.addEventListener("click", (event) => {
 
   const editVideoTarget = event.target.closest("[data-edit-video]");
   if (editVideoTarget) {
+    const video = videos.find((item) => item.id === editVideoTarget.dataset.editVideo);
+    const creator = creators.find((item) => item.id === video?.creatorId || item.name === video?.creator);
+    if (!assertWritable(creator?.owner || "")) return;
     openEditVideo(editVideoTarget.dataset.editVideo);
     return;
   }
 
   const editLiveTarget = event.target.closest("[data-edit-live]");
   if (editLiveTarget) {
+    const live = lives.find((item) => item.id === editLiveTarget.dataset.editLive);
+    if (!assertWritable(live?.owner || "")) return;
     openEditLive(editLiveTarget.dataset.editLive);
     return;
   }
 
   const deleteVideoTarget = event.target.closest("[data-delete-video]");
   if (deleteVideoTarget) {
+    const video = videos.find((item) => item.id === deleteVideoTarget.dataset.deleteVideo);
+    const creator = creators.find((item) => item.id === video?.creatorId || item.name === video?.creator);
+    if (!assertWritable(creator?.owner || "")) return;
     if (window.confirm(t("confirmDeleteVideo"))) {
       const shouldRefreshVideoModal = videoModal.classList.contains("open") && Boolean(state.activeVideoCreatorId);
       deleteVideoRecord(deleteVideoTarget.dataset.deleteVideo);
@@ -1985,6 +2037,8 @@ document.body.addEventListener("click", (event) => {
 
   const deleteLiveTarget = event.target.closest("[data-delete-live]");
   if (deleteLiveTarget) {
+    const live = lives.find((item) => item.id === deleteLiveTarget.dataset.deleteLive);
+    if (!assertWritable(live?.owner || "")) return;
     if (window.confirm(t("confirmDeleteLive"))) {
       const shouldRefreshLiveModal = liveModal.classList.contains("open") && Boolean(state.activeLiveCreatorId);
       deleteLiveRecord(deleteLiveTarget.dataset.deleteLive);
@@ -2017,12 +2071,16 @@ document.body.addEventListener("click", (event) => {
 
   const editTarget = event.target.closest("[data-edit-creator]");
   if (editTarget) {
+    const creator = creators.find((item) => item.id === editTarget.dataset.editCreator);
+    if (!assertWritable(creator?.owner || "")) return;
     openEditModal(editTarget.dataset.editCreator);
     return;
   }
 
   const deleteTarget = event.target.closest("[data-delete-creator]");
   if (deleteTarget) {
+    const creator = creators.find((item) => item.id === deleteTarget.dataset.deleteCreator);
+    if (!assertWritable(creator?.owner || "")) return;
     if (window.confirm(t("confirmDelete"))) {
       deleteCreator(deleteTarget.dataset.deleteCreator);
       render();
@@ -2074,6 +2132,8 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   const wasEditing = Boolean(state.editingCreatorId);
   const formData = new FormData(form);
+  const owner = formData.get("owner");
+  if (!assertWritable(owner)) return;
   addCreatorFromForm(formData);
   state.editingCreatorId = "";
   form.reset();
@@ -2085,6 +2145,7 @@ form.addEventListener("submit", (event) => {
 
 skuForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (!assertWritable(cloudOwner())) return;
   const formData = new FormData(skuForm);
   saveSkuRecord({
     sku: formData.get("sku"),
@@ -2107,6 +2168,7 @@ skuForm.addEventListener("submit", (event) => {
 sampleForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(sampleForm);
+  if (!assertWritable(formData.get("owner"))) return;
   saveSampleRecord({
     creator: formData.get("creator"),
     sku: formData.get("sku"),
@@ -2132,6 +2194,7 @@ videoForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const creator = creators.find((item) => item.id === state.activeVideoCreatorId);
   if (!creator) return;
+  if (!assertWritable(creator.owner)) return;
   const formData = new FormData(videoForm);
   const wasEditing = Boolean(state.editingVideoId);
   saveVideoRecord({
@@ -2165,6 +2228,7 @@ liveForm.addEventListener("submit", (event) => {
   const creator = creators.find((item) => item.id === state.activeLiveCreatorId);
   if (!creator) return;
   const formData = new FormData(liveForm);
+  if (!assertWritable(formData.get("owner") || creator.owner)) return;
   const wasEditing = Boolean(state.editingLiveId);
   saveLiveRecord({
     id: state.editingLiveId || "",
@@ -2205,4 +2269,11 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   });
 }
 
-render();
+if (window.CreatorCloud?.boot) {
+  window.CreatorCloud.boot(() => {
+    reloadAllData();
+    render();
+  });
+} else {
+  render();
+}
